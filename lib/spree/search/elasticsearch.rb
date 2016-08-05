@@ -53,7 +53,7 @@ module Spree
         # sorting
         if params[:search] && params[:search][:s]
           @sorting = params[:search][:s]
-          params[:search].delete(:s)
+          #params[:search].delete(:s)
         end
 
         # taxons
@@ -63,7 +63,7 @@ module Spree
         # price
         if params[:search] && params[:search][:price_any]
           @price_range = params[:search][:price_any]
-          params[:search].delete(:price_any)
+          #params[:search].delete(:price_any)
         end
 
         # properties
