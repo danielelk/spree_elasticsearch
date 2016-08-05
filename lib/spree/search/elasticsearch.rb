@@ -50,10 +50,9 @@ module Spree
         @promo = params[:promo]
         @recently = params[:recently]
 	
-	s = "random_order asc"
         # sorting
         if params[:search] && params[:search][:s]
-	  s = @sorting = params[:search][:s]
+	        @sorting = params[:search][:s]
         end
 
         # taxons
@@ -61,9 +60,8 @@ module Spree
         @browse_mode = params[:browse_mode] unless params[:browse_mode].nil?
 
         # price
-	price_any
-        if params[:search] && params[:search][:price_any]
-          price_any = @price_range = params[:search][:price_any]
+	      if params[:search] && params[:search][:price_any]
+          @price_range = params[:search][:price_any]
         end
 
         # properties
@@ -71,7 +69,7 @@ module Spree
           @properties = Hash.new
 
           params[:search].each do |key, value|
-	    next if key == 's' || key == 'price_any'
+	          next if key == 's' || key == 'price_any'
 
             value.reject! { |v| v.blank? }
             next if value.empty?
@@ -89,9 +87,6 @@ module Spree
             end
           end
         end
-
-	params[:search][:s] = s
-	params[:search][:price_any] = price_any
 
         # pagination
         @per_page = (params[:per_page].to_i <= 0) ? Spree::Config[:products_per_page] : params[:per_page].to_i
