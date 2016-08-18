@@ -26,7 +26,7 @@ module Spree
 
         production:
           <<: *defaults
-          index: production
+          index: development
       EOS
     end
 
