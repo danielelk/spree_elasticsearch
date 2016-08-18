@@ -49,11 +49,10 @@ module Spree
         @query = params[:keywords]
         @promo = params[:promo]
         @recently = params[:recently]
-
+	
         # sorting
         if params[:search] && params[:search][:s]
-          @sorting = params[:search][:s]
-          params[:search].delete(:s)
+	        @sorting = params[:search][:s]
         end
 
         # taxons
@@ -61,9 +60,8 @@ module Spree
         @browse_mode = params[:browse_mode] unless params[:browse_mode].nil?
 
         # price
-        if params[:search] && params[:search][:price_any]
+	      if params[:search] && params[:search][:price_any]
           @price_range = params[:search][:price_any]
-          params[:search].delete(:price_any)
         end
 
         # properties
@@ -71,6 +69,8 @@ module Spree
           @properties = Hash.new
 
           params[:search].each do |key, value|
+	          next if key == 's' || key == 'price_any'
+
             value.reject! { |v| v.blank? }
             next if value.empty?
 

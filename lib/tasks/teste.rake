@@ -5,25 +5,41 @@ namespace :teste do
       Elasticsearch::Model.client.indices.create \
         index: Spree::ElasticsearchSettings.index,
         body: {
-          settings: {
-            number_of_shards: 1,
-            number_of_replicas: 0,
-            analysis: {
-              analyzer: {
-                 nGram_analyzer: {
-                    type: "custom",
-                    filter: ["lowercase", "asciifolding", "nGram_filter"],
-                    tokenizer: "whitespace" },
-                 whitespace_analyzer: {
-                    type: "custom",
-                    filter: ["lowercase", "asciifolding"],
-                    tokenizer: "whitespace" }},
-              filter: {
-                 nGram_filter: {
-                    max_gram: "20",
-                    min_gram: "3",
-                    type: "nGram",
-                    token_chars: ["letter", "digit", "punctuation", "symbol"] }}}},
+            settings: {
+                number_of_shards: 1,
+                number_of_replicas: 0,
+                analysis: {
+                    analyzer: {
+                        nGram_analyzer: {
+                            type: "custom",
+                            filter: ["lowercase", "asciifolding", "nGram_filter"],
+                            tokenizer: "whitespace"
+                        },
+                        snowball_analyzer: {
+                            type: "custom",
+                            filter: ["lowercase", "asciifolding", "snowball_filter"],
+                            tokenizer: "whitespace"
+                        },
+                        whitespace_analyzer: {
+                            type: "custom",
+                            filter: ["lowercase", "asciifolding"],
+                            tokenizer: "whitespace"
+                        }
+                    },
+                    filter: {
+                        nGram_filter: {
+                            max_gram: "20",
+                            min_gram: "3",
+                            type: "nGram",
+                            token_chars: ["letter", "digit", "punctuation", "symbol"]
+                        },
+                        snowball_filter: {
+                            type: "snowball",
+                            token_chars: ["letter", "digit", "punctuation", "symbol"]
+                        }
+                    }
+                }
+            },
           mappings: Spree::Product.mappings.to_hash }
     end
     Spree::Product.importing_products
