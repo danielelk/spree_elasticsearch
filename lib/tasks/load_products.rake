@@ -1,6 +1,44 @@
 namespace :spree_elasticsearch do
+  # rake spree_elasticsearch:load_active_products
+  desc "Load active products into the index."
+  task :load_active_products => :environment do
+    try_index
+    products = Spree::Product.joins(:master).where('spree_variants.count_on_display > ?', 0)
+    Spree::Product.import_products_to_es(products)
+  end
+
+  # rake spree_elasticsearch:load_products
   desc "Load all products into the index."
   task :load_products => :environment do
+    try_index
+    products = Spree::Product.all
+    Spree::Product.import_products_to_es(products)
+  end
+
+  # rake spree_elasticsearch:remove_product[id]
+  desc "Remove product by id."
+  task :remove_product, [:id] => :environment do |t, args|
+    try_index
+    begin
+      Spree::Product.find_by_id(args[:id].to_i).__elasticsearch__.delete_document
+    rescue
+      puts "Product not found"
+    end
+  end
+
+  # rake spree_elasticsearch:find_product[id]
+  desc "Find product by id."
+  task :find_product, [:id] => :environment do |t, args|
+    try_index
+    begin
+      product = Spree::Product.get(args[:id].to_i)
+      puts "product: #{product.inspect}"
+    rescue
+      puts "Product not found"
+    end
+  end
+
+  def try_index
     unless Elasticsearch::Model.client.indices.exists index: Spree::ElasticsearchSettings.index
       Elasticsearch::Model.client.indices.create \
         index: Spree::ElasticsearchSettings.index,
@@ -40,9 +78,7 @@ namespace :spree_elasticsearch do
                     }
                 }
             },
-            mappings: Spree::Product.mappings.to_hash
-        }
+            mappings: Spree::Product.mappings.to_hash}
     end
-    Spree::Product.__elasticsearch__.import
   end
 end
