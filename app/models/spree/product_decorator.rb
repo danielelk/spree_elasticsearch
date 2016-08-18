@@ -3,16 +3,7 @@ Spree::Product.class_eval do
 
 
   def self.importing_products
-    active_products = Spree::Product.joins(:master).where('spree_variants.count_on_display > ?', 0)
-    puts "importing #{active_products.size} products.."
-
-    active_products.find_in_batches do |products|
-      bulk_products_index(active_products)
-    end
-  end
-
-  def self.importing_all_products
-    active_products = Spree::Product.all
+    active_products = Spree::Product.joins(:stock_items).joins(:master).where('spree_stock_items.count_on_hand > ? OR spree_variants.count_on_display > ?', 0, 0)
     puts "importing #{active_products.size} products.."
 
     active_products.find_in_batches do |products|
