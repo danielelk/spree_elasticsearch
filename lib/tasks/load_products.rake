@@ -3,7 +3,7 @@ namespace :spree_elasticsearch do
   desc "Load active products into the index."
   task :load_active_products => :environment do
     try_index
-    products = Spree::Product.joins(:master).where('spree_variants.count_on_display > ?', 0)
+    products = Spree::Product.joins(:stock_items).joins(:master).where('spree_stock_items.count_on_hand > ? OR spree_variants.count_on_display > ?', 0, 0)
     Spree::Product.import_products_to_es(products)
   end
 
