@@ -71,7 +71,7 @@ module Spree
             case key
               when 'genre_any'
                 @properties[:genero] = value
-              when 'brandy_any'
+              when 'brand_any'
                 @properties[:marca] = value
               when 'condition_any'
                 @properties[:condicao] = value
