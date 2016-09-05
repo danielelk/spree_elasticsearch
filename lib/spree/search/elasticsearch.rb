@@ -64,21 +64,20 @@ module Spree
           @properties = Hash.new
 
           params[:search].each do |key, value|
-	          next if key == 's' || key == 'price_any' || value.blank?
-
-            value = convert_to_array (value)
+	          next if key == 's' || key == 'price_any'
 
             case key
               when 'genre_any'
-                @properties[:genero] = value
+                @properties[:genero] = convert_to_array (value)
               when 'brand_any'
-                @properties[:marca] = value
+                value = convert_to_array (value).reject! { |c| c.blank? }
+                @properties[:marca] = value unless value.empty?
               when 'condition_any'
-                @properties[:condicao] = value
+                @properties[:condicao] = convert_to_array (value)
               when 'color_any'
-                @properties[:cor] = value
+                @properties[:cor] = convert_to_array (value)
               when 'size_any'
-                @properties[:'tamanho-retroca'] = value
+                @properties[:'tamanho-retroca'] = convert_to_array (value)
             end
           end
         end
