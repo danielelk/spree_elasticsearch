@@ -71,7 +71,7 @@ module Spree
                 @properties[:genero] = convert_to_array (value)
               when 'brand_any'
                 value = convert_to_array (value).reject! { |c| c.blank? }
-                @properties[:marca] = value unless value.empty?
+                @properties[:marca] = value unless value.nil? || value.empty?
               when 'condition_any'
                 @properties[:condicao] = convert_to_array (value)
               when 'color_any'
