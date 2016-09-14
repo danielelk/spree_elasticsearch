@@ -72,7 +72,7 @@ module Spree
 	          next if key == 's' || key == 'price_any'
 
             value.reject! { |v| v.blank? }
-            next if value.empty?
+            next if value.nil? || value.empty?
 
             if key == 'genre_any'
               @properties[:genero] = value
