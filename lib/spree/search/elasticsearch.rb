@@ -49,20 +49,15 @@ module Spree
         @query = params[:keywords]
         @promo = params[:promo]
         @recently = params[:recently]
-	
+
         # sorting
-        if params[:search] && params[:search][:s]
-	        @sorting = params[:search][:s]
-        end
+        @sorting = params[:search][:s] if params[:search] && params[:search][:s]
 
         # taxons
         @taxons = params[:taxon] unless params[:taxon].nil?
-        @browse_mode = params[:browse_mode] unless params[:browse_mode].nil?
 
         # price
-	      if params[:search] && params[:search][:price_any]
-          @price_range = params[:search][:price_any]
-        end
+        @price_range = convert_to_array(params[:search][:price_any]) if params[:search] && params[:search][:price_any]
 
         # properties
         if params[:search]
@@ -71,26 +66,35 @@ module Spree
           params[:search].each do |key, value|
 	          next if key == 's' || key == 'price_any'
 
-            value.reject! { |v| v.blank? }
-            next if value.nil? || value.empty?
-
-            if key == 'genre_any'
-              @properties[:genero] = value
-            elsif key == 'brand_any'
-              @properties[:marca] = value
-            elsif key == 'condition_any'
-              @properties[:condicao] = value
-            elsif key == 'color_any'
-              @properties[:cor] = value
-            elsif key == 'size_any'
-              @properties[:'tamanho-retroca'] = value
+            case key
+              when 'genre_any'
+                @properties[:genero] = convert_to_array (value)
+              when 'brand_any'
+                value = convert_to_array (value).reject! { |c| c.blank? }
+                @properties[:marca] = value unless value.empty?
+              when 'condition_any'
+                @properties[:condicao] = convert_to_array (value)
+              when 'color_any'
+                @properties[:cor] = convert_to_array (value)
+              when 'size_any'
+                @properties[:'tamanho-retroca'] = convert_to_array (value)
             end
           end
         end
 
         # pagination
-        @per_page = (params[:per_page].to_i <= 0) ? Spree::Config[:products_per_page] : params[:per_page].to_i
-        @page = (params[:page].to_i <= 0) ? 1 : params[:page].to_i
+        @per_page = (is_nil_or_negative? params[:per_page]) ? Spree::Config[:products_per_page] : params[:per_page].to_i
+        @page = (is_nil_or_negative? params[:page]) ? 1 : params[:page].to_i
+      end
+
+      private
+
+      def is_nil_or_negative? (number)
+        (number.nil? || number.to_i <= 0) ? true : false
+      end
+
+      def convert_to_array (params)
+        params.kind_of?(Hash) ? params.values : params
       end
     end
   end
