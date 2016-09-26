@@ -17,6 +17,7 @@ module Spree
       attribute :price_range, Array
       attribute :promo, Boolean, default: false
       attribute :recently, Boolean, default: false
+      attribute :remove_taxons, Array
 
       def initialize(params)
         self.current_currency = Spree::Config[:currency]
@@ -35,7 +36,8 @@ module Spree
             sorting: sorting,
             price_range: price_range,
             promo: promo,
-            recently: recently
+            recently: recently,
+            remove_taxons: remove_taxons
           ).to_hash
         )
         search_result.limit(per_page).page(page).records
@@ -55,6 +57,7 @@ module Spree
 
         # taxons
         @taxons = params[:taxon] unless params[:taxon].nil?
+        @remove_taxons = params[:remove_taxons] unless params[:remove_taxons].nil?
 
         # price
         @price_range = convert_to_array(params[:search][:price_any]) if params[:search] && params[:search][:price_any]
